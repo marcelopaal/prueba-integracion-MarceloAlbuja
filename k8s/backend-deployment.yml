@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-mae-deployment
+  namespace: proyecto-test-multicine
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: backend-mae
+  template:
+    metadata:
+      labels:
+        app: backend-mae
+    spec:
+      containers:
+      - name: backend-mae
+        image: proyecto-test-multicine/backend-img-mae:latest 
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8080
+        env:
+        - name: SPRING_DATASOURCE_URL
+          value: jdbc:postgresql://postgres-sql15-service-mae:5432/bd_multicine_test
+        - name: SPRING_DATASOURCE_USERNAME
+          value: admin
+        - name: SPRING_DATASOURCE_PASSWORD
+          value: N0S3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-mae-service
+  namespace: proyecto-test-multicine
+spec:
+  type: NodePort #ClusterIP
+  selector:
+    app: backend-mae
+  ports:
+    - port: 8080
+      targetPort: 8080
+      nodePort: 30002  
